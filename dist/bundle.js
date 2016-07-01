@@ -47,8 +47,8 @@
 	"use strict";
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(2);
-	var Hello_1 = __webpack_require__(3);
-	ReactDOM.render(React.createElement(Hello_1.Hello, {compiler: "TypeScript", framework: "React"}), document.getElementById("example"));
+	var Grid_1 = __webpack_require__(3);
+	ReactDOM.render(React.createElement(Grid_1.Grid, {rowCount: 3, colCount: 3, getCell: function (r, c) { return r * c; }}), document.getElementById("root"));
 
 
 /***/ },
@@ -73,19 +73,38 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var _ = __webpack_require__(4);
 	var React = __webpack_require__(1);
-	var Hello = (function (_super) {
-	    __extends(Hello, _super);
-	    function Hello() {
+	var Grid = (function (_super) {
+	    __extends(Grid, _super);
+	    function Grid() {
 	        _super.apply(this, arguments);
 	    }
-	    Hello.prototype.render = function () {
-	        return React.createElement("h1", null, "Hello from ", this.props.compiler, " and ", this.props.framework, "!");
+	    Grid.prototype.render = function () {
+	        return React.createElement("div", {className: "grid"}, _.range(this.props.rowCount).map(this.renderRow.bind(this)));
 	    };
-	    return Hello;
+	    Grid.prototype.renderRow = function (row) {
+	        return React.createElement(Row, {key: row}, _.range(this.props.colCount).map(this.renderCell.bind(this, row)));
+	    };
+	    Grid.prototype.renderCell = function (row, col) {
+	        return React.createElement(Cell, {key: col}, this.props.getCell(row, col));
+	    };
+	    return Grid;
 	}(React.Component));
-	exports.Hello = Hello;
+	exports.Grid = Grid;
+	function Row(props) {
+	    return React.createElement("div", {className: "grid-row"}, props.children);
+	}
+	function Cell(props) {
+	    return React.createElement("div", {className: "grid-cell"}, props.children);
+	}
 
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	module.exports = _;
 
 /***/ }
 /******/ ]);

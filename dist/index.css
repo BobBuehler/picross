@@ -1,0 +1,23 @@
+.grid {
+  background-color: #87e;
+  color: white;
+  display: flex;
+  flex-flow: column;
+  font-size: 20px; }
+  .grid .grid-row {
+    display: flex;
+    flex-flow: row; }
+    .grid .grid-row .grid-cell {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid white; }
+
+body {
+  background-color: #dee;
+  font-family: sans-serif; }
+
+#root {
+  display: inline-block; }

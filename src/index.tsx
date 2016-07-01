@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Hello } from "./components/Hello";
+import { Grid } from "./components/Grid";
 
 ReactDOM.render(
-    <Hello compiler="TypeScript" framework="React" />,
-    document.getElementById("example")
+    <Grid rowCount={3} colCount={3} getCell={(r, c) => r * c} />,
+    document.getElementById("root")
 );

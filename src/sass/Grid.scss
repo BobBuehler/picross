@@ -1,0 +1,25 @@
+$size: 40px;
+
+.grid {
+  background-color: #87e;
+  color: white;
+  display: flex;
+  flex-flow: column;
+  font-size: $size / 2;
+
+  & .grid-row {
+    display: flex;
+    flex-flow: row;
+
+    & .grid-cell {
+      width: $size;
+      height: $size;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      border: 1px solid white;
+    }
+  }
+}

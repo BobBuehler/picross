@@ -1,6 +1,4 @@
 .grid {
-  background-color: #87e;
-  color: white;
   display: flex;
   flex-flow: column;
   font-size: 20px; }
@@ -13,11 +11,27 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      border: 1px solid white; }
+      position: relative; }
+
+.picross.cell {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center; }
+  .picross.cell.rule {
+    background-color: #87e;
+    color: #ee7;
+    border: 1px solid white; }
+  .picross.cell.board {
+    background-color: #54e;
+    color: #ee7;
+    border: 1px solid white; }
 
 body {
   background-color: #dee;
-  font-family: sans-serif; }
+  font-family: sans-serif;
+  font-size: 20px; }
 
 #root {
   display: inline-block; }

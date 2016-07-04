@@ -9,7 +9,9 @@
   },
   "files": [
     "./typings/index.d.ts",
-    "./src/components/Hello.tsx",
-    "./src/index.tsx"
+    "./src/components/Grid.tsx",
+    "./src/components/PicrossGrid.tsx",
+    "./src/index.tsx",
+    "./src/Picross.ts"
   ]
 }

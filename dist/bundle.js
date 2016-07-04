@@ -47,8 +47,22 @@
 	"use strict";
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(2);
-	var Grid_1 = __webpack_require__(3);
-	ReactDOM.render(React.createElement(Grid_1.Grid, {rowCount: 3, colCount: 3, getCell: function (r, c) { return r * c; }}), document.getElementById("root"));
+	var Picross = __webpack_require__(3);
+	var PicrossGrid_1 = __webpack_require__(4);
+	var game = new Picross.Game([
+	    [3],
+	    [1, 1],
+	    [1],
+	    [1, 2],
+	    [3]
+	], [
+	    [3],
+	    [1, 1],
+	    [1, 1],
+	    [1, 1],
+	    [2]
+	]);
+	ReactDOM.render(React.createElement(PicrossGrid_1.PicrossGrid, {game: game}), document.getElementById("root"));
 
 
 /***/ },
@@ -65,6 +79,38 @@
 
 /***/ },
 /* 3 */
+/***/ function(module, exports) {
+
+	"use strict";
+	(function (CellState) {
+	    CellState[CellState["Empty"] = 0] = "Empty";
+	    CellState[CellState["No"] = 1] = "No";
+	    CellState[CellState["Yes"] = 2] = "Yes";
+	})(exports.CellState || (exports.CellState = {}));
+	var CellState = exports.CellState;
+	var Game = (function () {
+	    function Game(rowRules, colRules) {
+	        this.rowRules = rowRules;
+	        this.colRules = colRules;
+	        this.cells = [];
+	        for (var r = 0; r < rowRules.length; ++r) {
+	            var row = [];
+	            for (var c = 0; c < colRules.length; ++c) {
+	                row[c] = CellState.Empty;
+	            }
+	            this.cells[r] = row;
+	        }
+	    }
+	    Game.prototype.setCell = function (row, col, state) {
+	        this.cells[row][col] = state;
+	    };
+	    return Game;
+	}());
+	exports.Game = Game;
+
+
+/***/ },
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -73,7 +119,80 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var _ = __webpack_require__(4);
+	var React = __webpack_require__(1);
+	var Picross_1 = __webpack_require__(3);
+	var Grid_1 = __webpack_require__(5);
+	var PicrossGrid = (function (_super) {
+	    __extends(PicrossGrid, _super);
+	    function PicrossGrid() {
+	        _super.apply(this, arguments);
+	    }
+	    PicrossGrid.prototype.render = function () {
+	        var _this = this;
+	        var metrics = this.calcMetrics();
+	        return React.createElement(Grid_1.Grid, {rowCount: metrics.rows + metrics.maxRowRules, colCount: metrics.cols + metrics.maxColRules, getCell: function (r, c) { return _this.renderCell(metrics, r, c); }});
+	    };
+	    PicrossGrid.prototype.calcMetrics = function () {
+	        var game = this.props.game;
+	        return {
+	            rows: game.rowRules.length,
+	            cols: game.colRules.length,
+	            maxRowRules: Math.max.apply(Math, game.rowRules.map(function (rules) { return rules.length; })) || 1,
+	            maxColRules: Math.max.apply(Math, game.colRules.map(function (rules) { return rules.length; })) || 1
+	        };
+	    };
+	    PicrossGrid.prototype.renderCell = function (metrics, row, col) {
+	        if (row < metrics.maxColRules) {
+	            if (col < metrics.maxRowRules) {
+	                return this.renderOutter();
+	            }
+	            else {
+	                return this.renderRule(this.props.game.colRules[col - metrics.maxRowRules], metrics.maxColRules, row);
+	            }
+	        }
+	        else if (col < metrics.maxRowRules) {
+	            return this.renderRule(this.props.game.rowRules[row - metrics.maxColRules], metrics.maxRowRules, col);
+	        }
+	        else {
+	            return this.renderBoard(this.props.game.cells[row - metrics.maxColRules][col - metrics.maxRowRules]);
+	        }
+	    };
+	    PicrossGrid.prototype.renderOutter = function () {
+	        return React.createElement("span", {className: "picross cell outter"});
+	    };
+	    PicrossGrid.prototype.renderRule = function (rules, maxRules, index) {
+	        var offset = index - (maxRules - rules.length);
+	        if (offset < 0) {
+	            return this.renderOutter();
+	        }
+	        return React.createElement("span", {className: "picross cell rule"}, rules[offset]);
+	    };
+	    PicrossGrid.prototype.renderBoard = function (state) {
+	        var board = null;
+	        if (state === Picross_1.CellState.Yes) {
+	            board = '+';
+	        }
+	        else if (state === Picross_1.CellState.No) {
+	            board = '-';
+	        }
+	        return React.createElement("span", {className: "picross cell board"}, board);
+	    };
+	    return PicrossGrid;
+	}(React.Component));
+	exports.PicrossGrid = PicrossGrid;
+
+
+/***/ },
+/* 5 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var _ = __webpack_require__(6);
 	var React = __webpack_require__(1);
 	var Grid = (function (_super) {
 	    __extends(Grid, _super);
@@ -101,7 +220,7 @@
 
 
 /***/ },
-/* 4 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = _;

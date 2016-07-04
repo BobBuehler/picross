@@ -1,8 +1,6 @@
 $size: 40px;
 
 .grid {
-  background-color: #87e;
-  color: white;
   display: flex;
   flex-flow: column;
   font-size: $size / 2;
@@ -18,8 +16,7 @@ $size: 40px;
       display: flex;
       justify-content: center;
       align-items: center;
-
-      border: 1px solid white;
+      position: relative;
     }
   }
 }

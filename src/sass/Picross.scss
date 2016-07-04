@@ -1,0 +1,26 @@
+
+.picross {
+    &.cell {
+        height: 100%;
+        width: 100%;
+        
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        &.outter {
+        }
+        
+        &.rule {
+            background-color: #87e;
+            color: #ee7;
+            border: 1px solid white;
+        }
+        
+        &.board {
+            background-color: #54e;
+            color: #ee7;
+            border: 1px solid white;
+        }
+    }
+}

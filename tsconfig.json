@@ -1,17 +1,13 @@
 {
-  "compilerOptions": {
-    "outDir": "./dist/",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es5",
-    "jsx": "react"
-  },
-  "files": [
-    "./typings/index.d.ts",
-    "./src/components/Grid.tsx",
-    "./src/components/PicrossGrid.tsx",
-    "./src/index.tsx",
-    "./src/Picross.ts"
-  ]
+    "compilerOptions": {
+        "outFile": "index.js",
+        "noImplicitAny": true,
+        "target": "es5",
+        "jsx": "react",
+        "sourceMap": true,
+        "inlineSources": true
+    },
+    "include": [
+        "src/*"
+    ]
 }

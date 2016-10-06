@@ -15,6 +15,7 @@
     "typescript": "^2.0.3"
   },
   "scripts": {
-    "tsc": "tsc"
+    "tsc": "tsc",
+    "watch": "tsc --watch"
   }
 }

@@ -23,11 +23,7 @@ namespace Picross {
         }
         
         toString(): string {
-            return this.rows.map(rowToString).join('\n');
+            return Util.stringify2dArray(this.rows, '', cell => cell ? '+' : ' ');
         }
-    }
-    
-    function rowToString(row: boolean[]): string {
-        return row.map(cell => cell ? 'X' : ' ').join('');
     }
 }

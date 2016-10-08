@@ -9,6 +9,10 @@ namespace Util {
         return _.range(length).map(() => value);
     }
     
+    export function filled2dArray<T>(rowCount: number, colCount: number, value: T): T[][] {
+        return _.range(rowCount).map(() => filledArray(colCount, value));
+    }
+    
     export function getCols<T>(rows: T[][]): T[][] {
         return _.range(rows[0].length).map(colIndex => getCol(rows, colIndex));
     }

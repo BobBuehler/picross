@@ -60,11 +60,17 @@ puzzle.colRules = [
     [0]
 ];
 
-const solution = Picross.Solve(puzzle);
-if (!solution) {
-    console.log('puzzle is invalid');
-} else {
-    console.log(solution.toString());
-    
-    console.log(Picross.Validate(puzzle, solution));
-}
+const solver = new Picross.Solver(puzzle);
+while(true) {
+    const line: Picross.Line = solver.step();
+    if (line) {
+        console.log(line);
+        console.log(solver.getPartial().toString());
+    } else {
+        break;
+    }
+};
+
+const solution = solver.getSolution();
+console.log(solution.toString());
+console.log(Picross.Validate(puzzle, solution));

@@ -1,44 +1,125 @@
 namespace Picross {
-    export function Solve(puzzle: Puzzle): Solution {
-        const partialRows: number[][] = _.range(puzzle.rowRules.length).map(() => Util.filledArray(puzzle.colRules.length, MAYBE));
-        let changed = true;
-        let failed = false;
-        while (changed && !failed && !_.every(partialRows, partialIsSolved)) {
-            changed = false;
-            partialRows.forEach((partial: number[], index: number) => {
-                const updatedPartial = calcUpdatedPartial(partial, puzzle.rowRules[index]);
-                if (updatedPartial === null) {
-                    failed = true;
-                } else if (!_.isEqual(partial, updatedPartial)) {
-                    partialRows[index] = updatedPartial;
-                    changed = true;
-                }
-            });
+    export class Solver {
+        puzzle: Puzzle;
+        
+        private rowCount: number;
+        private colCount: number;
+        
+        private partial: PartialSolution;
+        private lineChangeCounts: LineChangeCounts;
+        
+        constructor (puzzle: Puzzle) {
+            this.puzzle = puzzle;
             
-            Util.getCols(partialRows).forEach((partial: number[], index: number) => {
-                const updatedPartial = calcUpdatedPartial(partial, puzzle.colRules[index]);
-                if (updatedPartial === null) {
-                    failed = true;
-                } else if (!_.isEqual(partial, updatedPartial)) {
-                    Util.setCol(partialRows, index, updatedPartial);
-                    changed = true;
-                }
-            });
+            this.rowCount = puzzle.rowRules.length;
+            this.colCount = puzzle.colRules.length;
+            
+            this.partial = new PartialSolution(this.rowCount, this.colCount);
+            this.lineChangeCounts = new LineChangeCounts(this.rowCount, this.colCount, 1);
         }
         
-        if (failed) {
-            return null;
+        getPartial(): PartialSolution {
+            return this.partial;
         }
-        if (changed) {
-            return new Solution(partialRows.map(partial => partial.map(cell => cell === YES)));
+        
+        getSolution(): Solution {
+            return new Solution(this.partial.getRows()
+                .map(partialRow => partialRow.map(partialValue => partialValue === YES)));
         }
-        return null;
+        
+        step(): Line {
+            let changedLine: Line = null;
+            while (!changedLine) {
+                const line: Line = this.lineChangeCounts.getMax();
+                if (this.lineChangeCounts.getCount(line) === 0) {
+                    break;
+                }
+                const partialLine = this.partial.getLine(line);
+                const updatedPartial = calcUpdatedPartial(partialLine, this.puzzle.getRules(line));
+                if (updatedPartial) {
+                    updatedPartial.forEach((value, index) => {
+                        if (value !== partialLine[index]) {
+                            changedLine = line;
+                            this.lineChangeCounts.incCount({ isRow: !line.isRow, index });
+                        }
+                    });
+                    if (changedLine) {
+                        this.partial.setLine(line, updatedPartial);
+                    }
+                }
+                this.lineChangeCounts.setCount(line, 0);
+            }
+            
+            return changedLine;
+        }
+    }
+    
+    class LineChangeCounts {
+        private rowCount: number;
+        private colCount: number;
+        
+        private counts: number[];
+        
+        constructor(rowCount: number, colCount: number, initialValue: number) {
+            this.rowCount = rowCount;
+            this.colCount = colCount;
+            
+            this.counts = Util.filledArray(rowCount + colCount, initialValue);
+        }
+        
+        getCount(line: Line): number {
+            return this.counts[this.getOffset(line)];
+        }
+        
+        setCount(line: Line, count: number): void {
+            this.counts[this.getOffset(line)] = count;
+        }
+        
+        incCount(line: Line): void {
+            this.counts[this.getOffset(line)]++;
+        }
+        
+        getMax(): Line {
+            return _.maxBy(Line.getLines(this.rowCount, this.colCount), line => this.getCount(line));
+        }
+        
+        private getOffset(line: Line) {
+            return line.isRow ? line.index : this.rowCount + line.index;
+        }
     }
     
     const YES = 1;
     const MAYBE = 0;
     const NO = -1;
+    
+    class PartialSolution {
+        private rows: number[][];
         
+        constructor(rowCount: number, colCount: number) {
+            this.rows = Util.filled2dArray(rowCount, colCount, MAYBE);
+        }
+        
+        getRows(): number[][] {
+            return this.rows;
+        }
+        
+        getCols(): number[][] {
+            return Util.getCols(this.rows);
+        }
+        
+        getLine(line: Line): number[] {
+            return Line.getLine(this.rows, line);
+        }
+        
+        setLine(line: Line, partialLine: number[]): void {
+            Line.setLine(this.rows, line, partialLine);
+        }
+        
+        toString(): string {
+            return Util.stringify2dArray(this.rows, '', cell => cell === YES ? '+' : cell === NO ? '-' : ' ');
+        }
+    }
+    
     interface SearchNode {
         ruleIndex: number;
         cellIndex: number;
@@ -144,13 +225,5 @@ namespace Picross {
     
     function canBeOff(partial: number[], index: number): boolean {
         return index >= partial.length || partial[index] === MAYBE || partial[index] === NO;
-    }
-    
-    function partialIsSolved(partial: number[]) {
-        return _.every(partial, cell => cell !== MAYBE);
-    }
-    
-    function partialRowsToString(partialRows: number[][]): string {
-        return Util.stringify2dArray(partialRows, '', cell => cell === YES ? '+' : cell === NO ? '-' : ' ');
     }
 }

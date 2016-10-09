@@ -192,7 +192,7 @@ namespace Picross {
             };
         });
         
-        return possibleNodes.filter(node => canPlaceRule(partial, rules[nextRuleIndex], nextCellIndexStart, node.cellIndex));
+        return possibleNodes.filter(node => canPlaceRule(partial, rules[nextRuleIndex], nextCellIndexStart, node.cellIndex, nextRuleIndex === rules.length - 1));
     }
     
     function buildPossibility(length: number, node: SearchNode, rules: number[]): boolean[] {
@@ -205,10 +205,10 @@ namespace Picross {
         return possibility;
     }
     
-    function canPlaceRule(partial: number[], rule: number, offsStart: number, ruleStart: number): boolean {
+    function canPlaceRule(partial: number[], rule: number, offsStart: number, ruleStart: number, isLast: boolean): boolean {
         return canBeOffs(partial, offsStart, ruleStart) &&
             canBeOns(partial, ruleStart, ruleStart + rule) &&
-            canBeOff(partial, ruleStart + rule);
+            canBeOffs(partial, ruleStart + rule, isLast ? partial.length : ruleStart + rule + 1);
     }
     
     function canBeOns(partial: number[], start: number, end: number) {
